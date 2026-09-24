@@ -1,0 +1,9 @@
+UnityPy
+numpy
+scipy
+pillow
+freetype-py
+fonttools
+opencv-python-headless
+etcpak
+texture2ddecoder

@@ -1,0 +1,13 @@
+# Oyundan çıkarılan veya oyundan üretilen dosyalar (telif hakkı oyunun sahibine aittir)
+build/
+patch/
+src/
+gorsel/en/
+gorsel/tr/
+gorsel/*.ttf
+kurulum/banner.png
+kurulum/turkce.yama
+kurulum/*.exe
+*.zip
+__pycache__/
+.venv/
