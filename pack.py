@@ -1,5 +1,5 @@
 """patch/objects.pkl + patch/ress.pkl + ORİJİNAL (yamasız) oyun dosyaları -> paket/veri/turkce.yama"""
-import pickle, struct, os, sys
+import pickle, struct, os, sys, zlib
 GAME = sys.argv[1] if len(sys.argv) > 1 else "C:/Program Files (x86)/Steam/steamapps/common/Ved疗愈所"
 OUT = sys.argv[2] if len(sys.argv) > 2 else "../paket/VedRecure_TurkceYama/veri/turkce.yama"
 objs = pickle.load(open("patch/objects.pkl", "rb"))
@@ -8,7 +8,7 @@ from yama import SF
 import UnityPy
 data = os.path.join(GAME, "ved_Data")
 def s(x): b = x.encode("utf-8"); return struct.pack("<H", len(b)) + b
-out = bytearray(b"VEDTR" + bytes([1]))
+out = bytearray(b"VEDTR" + bytes([2]))   # sürüm 2: .resS bölgeleri için orijinal CRC32
 out += struct.pack("<I", len(objs))
 for fn, new in objs.items():
     p = os.path.join(data, fn); sf = SF(p)
@@ -26,7 +26,12 @@ for fn, new in objs.items():
             out += struct.pack("<Q", off) + orig20 + struct.pack("<I", len(raw)) + raw
 out += struct.pack("<I", len(ress))
 for fn, writes in ress.items():
-    out += s(fn) + struct.pack("<Q", os.path.getsize(os.path.join(data, fn))) + struct.pack("<I", len(writes))
+    # bölgelerin ORİJİNAL baytlarının CRC32'si: kurulum programı dosyanın gerçekten orijinal olduğunu buna göre denetler
+    crc = 0
+    with open(os.path.join(data, fn), "rb") as fh:
+        for off, b in writes:
+            fh.seek(off); crc = zlib.crc32(fh.read(len(b)), crc)
+    out += s(fn) + struct.pack("<Q", os.path.getsize(os.path.join(data, fn))) + struct.pack("<II", crc & 0xFFFFFFFF, len(writes))
     for off, b in writes:
         out += struct.pack("<QI", off, len(b)) + b
 os.makedirs(os.path.dirname(OUT), exist_ok=True)

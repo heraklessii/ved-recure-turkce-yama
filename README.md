@@ -21,6 +21,7 @@ Yaklaşık 4.600 satır. Tutarlı terimler için bkz. [`tr/SOZLUK.md`](tr/SOZLUK
 1. Oyunu kapatın.
 2. [Releases](../../releases/latest) sayfasından zip'i indirip açın, `VedTurkceYama.exe`'yi çalıştırın.
 3. Denetimler yeşilse **YAMAYI KUR**'a basın.
+   Kurulum için **internet bağlantısı gerekir**: program bu sayfadaki son sürümü denetler; elinizdeki sürüm eskiyse kurulum yapılmaz.
 4. Oyunda **Ayarlar > Dil** bölümünden **Türkçe**'yi seçin (yama İngilizcenin yerine geçer).
 
 **Kaldırmak için:** Aynı programda **Yamayı Kaldır**'a basın. Kurulumda alınan yedekten orijinal dosyalar birebir geri yüklenir.
@@ -28,8 +29,10 @@ Yaklaşık 4.600 satır. Tutarlı terimler için bkz. [`tr/SOZLUK.md`](tr/SOZLUK
 ### Notlar
 
 - Yama yalnızca Steam'den edinilmiş orijinal kopyaya kurulur. Program, oyun sürümü uyuşmazsa hiçbir dosyaya dokunmadan durur.
-- Uyumlu oyun sürümü: **0.0.1871 (Steam build 25483973)**.
+- Uyumlu oyun sürümü: **0.0.1872 (Steam build 25535904)**.
 - Steam'de "Oyun dosyalarının bütünlüğünü doğrula" yamayı siler; yeniden kurmanız yeterlidir.
+- Oyun güncellendikten sonra **Yamayı Kaldır** yalnızca hâlâ yamalı olan dosyaları geri alır, güncellemeyle değişen dosyalara dokunmaz
+  (internet gerektirmez). Ardından Steam'de dosya bütünlüğünü doğrulamanız önerilir.
 - Kayıt dosyalarınıza dokunulmaz.
 - Program imzasız olduğu için Windows SmartScreen uyarı verebilir ("Ek bilgi" > "Yine de çalıştır").
   Birkaç antivirüsün yapay zekâ tabanlı (ML) tespiti de imzasız, yeni programlar için yanlış alarm verebilir.
@@ -85,5 +88,6 @@ Araçların ve kurulum programının kaynak kodu [MIT lisansı](LICENSE) ile sun
 
 Unofficial Turkish translation patch for **Ved: Recure** (Steam). Download the installer from [Releases](../../releases/latest),
 run `VedTurkceYama.exe`, click **YAMAYI KUR** (install), then pick **Türkçe** in the game's language settings (it replaces English).
-The installer backs up every changed byte and can fully uninstall. Only the original Steam copy (build 25483973) is supported.
+The installer checks this repository for the latest release (an internet connection is required to install; outdated installers refuse to
+install), backs up every changed byte and can fully uninstall. Only the original Steam copy (build 25535904) is supported.
 This repository contains the translation texts and the tooling (Python + C#); no game assets are included.

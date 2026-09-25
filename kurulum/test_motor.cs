@@ -12,6 +12,8 @@ namespace VedTurkceYama {
         Console.WriteLine("Surum: " + (Motor.SurumKontrol(oyun, v) ?? "OK"));
         Motor.Kur(oyun, v, delegate(int p, string m) { Console.WriteLine(p + "% " + m); });
       }
+      if (a.Length > 0 && a[0] == "surum") { bool y; Console.WriteLine("GitHub son surum: " + Guncelleme.SonSurum() + " | denetim: " + (Guncelleme.Denetle(out y) ?? "GUNCEL")); }
+      if (a.Length > 0 && a[0] == "denetle") Console.WriteLine("Eski yedek dosyalari: " + string.Join(", ", Motor.YedekDenetle(oyun).ToArray()));
       if (a.Length > 0 && a[0] == "kaldir") Console.WriteLine(Motor.Kaldir(oyun, delegate(int p, string m) { Console.WriteLine(p + "% " + m); }));
       if (a.Length > 1 && a[0] == "ekran") {
         var f = new AnaForm(null, null);

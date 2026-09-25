@@ -55,3 +55,26 @@ Python ortamı: `uv venv -p 3.12 .venv && uv pip install -p .venv UnityPy numpy 
   sharedassets0 "LanguageTest" dokusudur.
 - `make_patch.py` artık gorseller.pkl + metadata.pkl'yi de ekler ve bölgelerin çakışmadığını denetler.
 - Derleme: `derle.bat` bazen cmd'den bulunamıyor; csc komutunu doğrudan çalıştırın.
+
+## v1.4 — Oyun güncellemesi akışı
+Oyun güncellenince (ör. 0.0.1871 → 0.0.1872):
+1. Oyun klasöründe eski `TurkceYama_yedek/` varsa **oyun klasöründen çıkarın** (yeni dosyalara eski baytlar yazılmasın).
+2. Steam'de "Oyun dosyalarının bütünlüğünü doğrula" (`steam://validate/3255500`): Steam güncellemede yalnızca değişen dosyaları indirir;
+   dokunmadığı dosyalar (ör. `.resS`) eski yamayı taşıyabilir.
+3. `python cikar.py` (eski `build/en_original.csv`'yi önce yedekleyin) → `python diff_csv.py build/en_original_ESKI.csv build/en_original.csv`
+   → `build/fark.json`: eklenen/değişen satırları `tr/` altına çevirin → `python assemble.py`.
+4. `build_fonts.py`, `sabit_metin.py`, `gorsel/paketle.py --denetle` (görseller değişmiş mi?), `gorsel/paketle.py`, `metadata_yama.py`,
+   `make_patch.py`, `pack.py`. Fontlar ve sahne metinleri artık **ada/içeriğe göre** bulunur (`nesne_bul.py`); pathID kaymaları sorun değil.
+   `sabit_metin.py` beklenen nesne sayısı tutmazsa durur.
+5. `kurulum/VedTurkceYama.cs`: `Sabit.Surum`, `OyunSurumu`, `OyunBuild`, `OrijinalDosyalar` SHA-256'ları, AssemblyVersion.
+6. Derle, test et (`test_motor.exe kur|denetle|kaldir|surum`), GitHub'da yeni release yayımla (etiket `vX.Y`).
+   **Önemli:** Kurulum programı GitHub'daki son release etiketiyle kendi sürümünü karşılaştırır; eski programlar kurulum yapmaz.
+
+### Kurulum programındaki güvenlik denetimleri (v1.4)
+- Yama verisi biçimi `VEDTR` v2: her `.resS`/metadata dosyası için değiştirilecek bölgelerin **orijinal CRC32**'si. Dosyalar tam orijinal
+  değilse kurulum başlamaz.
+- Yedek biçimi `VEDBK2`: `.assets` için yamalı dosya boyutu; bölge dosyaları için yazılan verinin CRC32'si. Kaldırırken yalnızca hâlâ
+  yamalı olduğu doğrulanan dosyalar geri yüklenir (oyun güncellemesiyle değişenlere dokunulmaz). Eski `VEDBK1` yedekleri de okunur;
+  `.assets` kayıtları eklenen bölgeyi göstermiyorsa dosya atlanır.
+- GitHub sürüm denetimi: `github.com/<depo>/releases/latest` yönlendirmesinden etiket okunur (yedek yol: GitHub API). İnternet yoksa veya
+  program eskiyse kurulum yapılmaz; kaldırma her zaman çalışır.

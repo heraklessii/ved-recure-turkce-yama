@@ -1,13 +1,20 @@
 import struct, pickle, numpy as np
 from fontgen import GlyphSource, TR, EXTRA_COMP
-# (file, font pathID, ttf pathID or None)
-FONTS = [("sharedassets0.assets",774,None),        # VedEnglish  (main English UI/dialog font)
-         ("resources.assets",1647236,None),         # VedAllLanguage
-         ("sharedassets0.assets",771,19877),        # Bahnschrift outlineGrery
-         *[("resources.assets",p,19891) for p in range(1647230,1647234)],  # Barlow
-         *[("resources.assets",p,19877) for p in range(1647226,1647230)],  # Bahnschrift
-         *[("resources.assets",p,19878) for p in range(1647221,1647224)],  # Anton
-         *[("resources.assets",p,19889) for p in range(1647224,1647226)]]  # ArchivoBlack
+# (dosya, TMP font adı, TTF font adı veya None) — pathID'ler güncellemelerde kaydığı için ada göre bulunur
+FONT_ADLARI = [("sharedassets0.assets", "VedEnglish", None),             # ana İngilizce arayüz/diyalog fontu
+               ("resources.assets", "VedAllLanguage", None),
+               ("sharedassets0.assets", "BahnschriftStaticBold SDF_outlineGrery", "BahnschriftStaticBold"),
+               *[("resources.assets", "BarlowBlackItalicEnglish_" + k, "BarlowBlackItalic") for k in ("outlineblack", "outlineblackA0", "outlinegreyBold", "outlinewhite")],
+               *[("resources.assets", "BahnschriftStaticBold SDF" + k, "BahnschriftStaticBold") for k in ("", "_outline", "_outlineLittle", "_outlineWhite")],
+               *[("resources.assets", "AntonSDF" + k, "Anton") for k in ("", "_outline", "_soft")],
+               *[("resources.assets", "ArchivoBlackSDF" + k, "Archivo-Black") for k in ("", "_outline")]]
+def font_listesi():
+    from nesne_bul import ada_gore, dosya
+    ttf = {o.read().m_Name: pid for pid, o in dosya("resources.assets").objects.items() if o.type.name == "Font"}
+    ids = {}
+    for fn in {f for f, _, _ in FONT_ADLARI}:
+        ids[fn] = ada_gore(fn, [a for f, a, _ in FONT_ADLARI if f == fn])
+    return [(fn, ids[fn][ad], ttf[t] if t else None) for fn, ad, t in FONT_ADLARI]
 def pack(atlas, free, sizes):
     """place boxes (h,w) (+1px margin) into empty atlas space found with an integral image"""
     H,W=atlas.shape; occ=(atlas>0).astype(np.int32); placed=[]
@@ -21,11 +28,14 @@ def pack(atlas, free, sizes):
         y,x=ys[k]+1,xs[k]+1
         occ[y-1:y+h+1, x-1:x+w+1]=1; placed.append((x,y))
     return placed
+if __name__ != "__main__": raise ImportError("build_fonts.py doğrudan çalıştırılmalı")
 plan=[]
 import os
 _G="C:/Program Files (x86)/Steam/steamapps/common/Ved疗愈所/"
 if os.path.exists(_G+"TurkceYama_yedek/yedek.bin") or os.path.exists(_G+"TurkceYama_yedek/manifest.pkl"):
     raise SystemExit("HATA: Oyun yamalı görünüyor. Önce Yamayi_Kaldir.bat ile orijinale döndürün.")
+FONTS = font_listesi()
+for fn, pid, ttf in FONTS: print("font:", fn, pid, "ttf:", ttf)
 for fn,pid,ttf in FONTS:
     gs=GlyphSource(fn,pid,ttf); d=gs.d; pad=gs.pad; raw=d['raw']
     todo=[ch for ch in TR+(EXTRA_COMP if gs.face is None else '') if ord(ch) not in d['cmap']]
